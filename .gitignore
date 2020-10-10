@@ -40,6 +40,7 @@ node_modules/
 .next
 
 dist
+build
 
 # DynamoDB Local files
 .dynamodb/
