@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
+import cors from "cors";
 import { buildSchema } from "type-graphql";
 
 import { dbConfig, PORT } from "./config";
@@ -10,6 +11,11 @@ import { createConnection } from "typeorm";
 
 (async () => {
   const app = express();
+
+  app.use(
+    "/graphql",
+    cors({ origin: "http://localhost:3000", credentials: true })
+  );
 
   await createConnection(dbConfig);
 

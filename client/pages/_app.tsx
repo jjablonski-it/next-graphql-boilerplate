@@ -1,10 +1,13 @@
+import { ApolloProvider } from "@apollo/client";
 import { AppProps } from "next/app";
+import { useApollo } from "../lib/apolloClient";
 
 export default function App({ Component, pageProps }: AppProps) {
+  const client = useApollo(pageProps.initialApolloProps);
   return (
-    <div>
-      <h1>wrapper</h1>
+    <ApolloProvider client={client}>
+      <h1>Wrapper</h1>
       <Component {...pageProps} />
-    </div>
+    </ApolloProvider>
   );
 }
