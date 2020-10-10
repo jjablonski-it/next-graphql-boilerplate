@@ -1,0 +1,9 @@
+{
+  "name": "next-apollo-graphql-express-boilerplate",
+  "version": "1.0.0",
+  "description": "Folder structure for full stack Typescript application using React with Nextjs framework and Apollo client on the front-end, Express Grahpql API on the backend.",
+  "main": "build/server.js",
+  "repository": "https://github.com/jjablonski-it/next-graphql-boilerplate.git",
+  "author": "Jakub Jabłoński",
+  "license": "MIT"
+}
