@@ -1,21 +1,16 @@
-import { ApolloServer, gql } from "apollo-server-express";
+import "reflect-metadata";
+import { ApolloServer } from "apollo-server-express";
 import express from "express";
+import { buildSchema } from "type-graphql";
+
 import { PORT } from "./config";
+import HelloResolver from "./resolvers/hello";
 
 (async () => {
   const app = express();
 
   const apolloServer = new ApolloServer({
-    typeDefs: gql`
-      type Query {
-        hello: String!
-      }
-    `,
-    resolvers: {
-      Query: {
-        hello: () => "hello world",
-      },
-    },
+    schema: await buildSchema({ resolvers: [HelloResolver] }),
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
