@@ -17,6 +17,7 @@ import { createAuthToken, createRefreshToken } from "../auth/tokens";
 import isAuth from "../middleware/isAuth";
 import ContextType from "../types/ContextType";
 import setCookie from "../auth/setCookie";
+import RevokeTokenResponse from "../types/RevokeTokenResponse";
 
 @Resolver()
 export default class UserResolver {
@@ -50,9 +51,9 @@ export default class UserResolver {
       }
     );
 
-    if (error) return { ok: false, error };
+    if (error) return { success: false, error };
 
-    return { ok: !!user };
+    return { success: !!user };
   }
 
   @Mutation(() => LoginResponse!)
@@ -72,5 +73,29 @@ export default class UserResolver {
     const authToken = createAuthToken(user);
 
     return { authToken };
+  }
+
+  @Mutation(() => RevokeTokenResponse!)
+  @UseMiddleware(isAuth)
+  async revokeToken(
+    @Ctx() { payload }: ContextType
+  ): Promise<RevokeTokenResponse> {
+    const userId = payload?.userId;
+    if (!userId)
+      return { success: false, error: { message: "token not provided" } };
+
+    const user = await User.findOne(userId);
+    if (!user)
+      return { success: false, error: { message: "user does not exist" } };
+
+    user.tokenVersion = user.tokenVersion + 1;
+
+    try {
+      await user.save();
+    } catch (e) {
+      return { success: false, error: { message: "error while saving user" } };
+    }
+
+    return { success: true };
   }
 }

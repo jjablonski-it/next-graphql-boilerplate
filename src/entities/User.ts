@@ -29,7 +29,7 @@ export default class User extends BaseEntity {
 
   @Field()
   @Column({ default: 1 })
-  tokenVersion: Number;
+  tokenVersion: number;
 
   @Column()
   password: string;

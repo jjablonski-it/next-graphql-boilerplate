@@ -3,7 +3,7 @@ import { sign } from "jsonwebtoken";
 import TokenPayload from "../types/TokenPayload";
 
 export const createAuthToken = (user: User) =>
-  sign({ userId: user.id }, process.env.AUTH_SECRET!, { expiresIn: "30sec" });
+  sign({ userId: user.id }, process.env.AUTH_SECRET!, { expiresIn: "15min" });
 
 export const createRefreshToken = (user: User) =>
   sign(
