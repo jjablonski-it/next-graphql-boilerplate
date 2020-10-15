@@ -26,4 +26,7 @@ export default class User extends BaseEntity {
   @Field()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column()
+  password: string;
 }

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
-import express from "express";
+import express, { Request, Response } from "express";
 import { buildSchema } from "type-graphql";
 
 import { dbConfig, PORT } from "./config";
@@ -18,6 +18,7 @@ import { createConnection } from "typeorm";
       resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
+    context: (req: Request, res: Response) => ({ req, res }),
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
