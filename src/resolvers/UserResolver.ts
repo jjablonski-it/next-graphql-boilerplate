@@ -1,4 +1,11 @@
-import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
 import { compare, hash } from "bcrypt";
 
 import User from "../entities/User";
@@ -6,12 +13,28 @@ import UsernamePassword from "../types/UsernamePassword";
 import LoginResponse from "../types/LoginResponse";
 import RegisterResponse from "../types/RegisterResponse";
 import ErrorObject from "../types/ErrorObject";
+import { createAuthToken, createRefreshToken } from "../auth/tokens";
+import isAuth from "../middleware/isAuth";
+import ContextType from "../types/ContextType";
+import setCookie from "../auth/setCookie";
 
 @Resolver()
 export default class UserResolver {
   @Query(() => [User]!)
   async users() {
     return await User.find();
+  }
+
+  @Query(() => User!, { nullable: true })
+  @UseMiddleware(isAuth)
+  async me(@Ctx() { payload }: ContextType) {
+    const userId = payload?.userId;
+    if (!userId) return null;
+
+    const user = await User.findOne({ id: userId });
+    if (!user) return null;
+
+    return user;
   }
 
   @Mutation(() => RegisterResponse!)
@@ -27,14 +50,15 @@ export default class UserResolver {
       }
     );
 
-    if (error) return { created: false, error };
+    if (error) return { ok: false, error };
 
-    return { created: !!user };
+    return { ok: !!user };
   }
 
   @Mutation(() => LoginResponse!)
   async login(
-    @Arg("input") { name, password }: UsernamePassword
+    @Arg("input") { name, password }: UsernamePassword,
+    @Ctx() { res }: ContextType
   ): Promise<LoginResponse> {
     const user = await User.findOne({ name });
     if (!user) return { error: { field: "field", message: "wrong username" } };
@@ -43,6 +67,10 @@ export default class UserResolver {
     if (!valid)
       return { error: { field: "password", message: "wrong password" } };
 
-    return { authToken: "token" };
+    setCookie(res, createRefreshToken(user));
+
+    const authToken = createAuthToken(user);
+
+    return { authToken };
   }
 }

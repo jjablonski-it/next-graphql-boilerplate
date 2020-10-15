@@ -4,7 +4,7 @@ import ErrorObject from "./ErrorObject";
 @ObjectType()
 class RegisterResponse {
   @Field()
-  created: boolean;
+  ok: boolean;
   @Field({ nullable: true })
   error?: ErrorObject;
 }
