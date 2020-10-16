@@ -11,12 +11,12 @@ export default function Index() {
   if (error) return <pre>error: {error && JSON.stringify(error, null, 4)}</pre>;
 
   return (
-    <Container>
+    <>
       <Typography variant="h3" color="secondary">
         Index
       </Typography>
       <pre>data: {data && JSON.stringify(data, null, 4)}</pre>
-    </Container>
+    </>
   );
 }
 export const getStaticProps = async () => apolloPrefetch([users]);

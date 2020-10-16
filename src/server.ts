@@ -2,7 +2,6 @@ import "dotenv/config";
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
-import cors from "cors";
 import { buildSchema } from "type-graphql";
 import cookieParser from "cookie-parser";
 
