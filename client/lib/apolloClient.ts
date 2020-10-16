@@ -1,40 +1,71 @@
 import { useMemo } from "react";
 import {
   ApolloClient,
+  ApolloLink,
   HttpLink,
   InMemoryCache,
   NormalizedCacheObject,
 } from "@apollo/client";
-import { getToken } from "../utils/authToken";
+import { setContext } from "@apollo/client/link/context";
+import { ErrorLink, onError } from "@apollo/client/link/error";
+import { getToken, setToken } from "../utils/authToken";
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
-const createHeaders = async () => {
+const getHeaders = () => {
   if (typeof window === "undefined") return {}; // Add headers client side only
 
-  let authToken = getToken();
-  if (!authToken) {
-    const res = await fetch("http://localhost:4000/refresh_token", {
-      credentials: "include",
-    });
-    const data = await res.json();
-    console.log(data);
-
-    if (data.error) return {};
-    authToken = data.authToken;
-  }
+  const authToken = getToken();
+  console.log("createHeaders", { Authorization: `Bearer ${authToken}` });
+  if (!authToken) return {};
 
   return { Authorization: `Bearer ${authToken}` };
 };
 
+const withTokenLink = setContext(() => {
+  const authToken = getToken();
+  if (authToken) return authToken; // TODO check if token is not expired
+
+  return fetch("http://localhost:4000/refresh_token", {
+    credentials: "include",
+  })
+    .then((res) => res.json())
+    .then(({ authToken }) => {
+      if (authToken) {
+        setToken(authToken);
+        return authToken;
+      }
+    });
+});
+
+const resetTokenLink = onError(({ networkError }) => {
+  if (networkError) setToken("");
+});
+
+const headersLink = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers }) => ({
+    headers: {
+      ...getHeaders(),
+      ...headers,
+    },
+  }));
+  return forward(operation);
+});
+
+const httpLink = new HttpLink({
+  uri: "http://localhost:4000/graphql", // Server URL (must be absolute)
+  credentials: "include", // Additional fetch() options like `credentials` or `headers`
+});
+
 const createApolloClient = () => {
   return new ApolloClient({
     ssrMode: typeof window === "undefined",
-    link: new HttpLink({
-      uri: "http://localhost:4000/graphql", // Server URL (must be absolute)
-      credentials: "include", // Additional fetch() options like `credentials` or `headers`
-      headers: createHeaders(),
-    }),
+    link: ApolloLink.from([
+      withTokenLink,
+      resetTokenLink,
+      headersLink,
+      httpLink,
+    ]),
     cache: new InMemoryCache({
       //   typePolicies: {
       //     Query: {
