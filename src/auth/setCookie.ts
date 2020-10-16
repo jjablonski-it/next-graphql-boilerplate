@@ -8,6 +8,7 @@ import { Response } from "express";
 const setCookie = (res: Response, token: string) => {
   res.cookie("rid", token, {
     httpOnly: true,
+    sameSite: false,
     path: "/refresh_token",
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });

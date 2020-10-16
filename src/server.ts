@@ -4,6 +4,7 @@ import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import { buildSchema } from "type-graphql";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 import { dbConfig, PORT } from "./config";
 import HelloResolver from "./resolvers/HelloResolver";
@@ -24,6 +25,7 @@ import refreshTokenRoute from "./auth/refreshTokenRoute";
   });
 
   // Middleware
+  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
   app.use("/refresh_token", cookieParser());
   app.use("/refresh_token", refreshTokenRoute);
   apolloServer.applyMiddleware({ app, cors: false });
