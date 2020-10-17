@@ -1,0 +1,9 @@
+mutation Login($input: UsernamePassword!) {
+  login(input: $input) {
+    authToken
+    error {
+      field
+      message
+    }
+  }
+}

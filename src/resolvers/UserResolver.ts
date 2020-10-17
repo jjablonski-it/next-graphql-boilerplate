@@ -21,7 +21,7 @@ import RevokeTokenResponse from "../types/RevokeTokenResponse";
 
 @Resolver()
 export default class UserResolver {
-  @Query(() => [User]!)
+  @Query(() => [User!]!)
   async users() {
     return await User.find();
   }

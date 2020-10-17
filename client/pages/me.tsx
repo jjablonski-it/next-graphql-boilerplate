@@ -1,9 +1,8 @@
-import { useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
-import me from "../qraphql/queries/me";
+import { useMeQuery } from "../src/generated/graphql";
 
 export default function Me() {
-  const { data, loading, error } = useQuery(me);
+  const { data, loading, error } = useMeQuery();
 
   if (loading) return <Typography>Loading...</Typography>;
 

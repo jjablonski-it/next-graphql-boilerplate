@@ -1,6 +1,6 @@
 import React, { ReactElement } from "react";
 import QuickForm from "../components/QuickForm";
-import login from "../qraphql/mutations/login";
+import { LoginDocument } from "../src/generated/graphql";
 import { setToken } from "../utils/authToken";
 
 interface Props {}
@@ -11,7 +11,7 @@ export default function Login({}: Props): ReactElement {
       <QuickForm
         name="Login"
         fields={["name", "password"]}
-        mutation={login}
+        mutation={LoginDocument}
         onSubmit={(data, router) => {
           const { authToken, error } = data.login;
           if (authToken) {
