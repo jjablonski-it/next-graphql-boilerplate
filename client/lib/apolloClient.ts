@@ -26,6 +26,8 @@ const withTokenLink = setContext(() => {
   const authToken = getToken();
   if (authToken) return authToken; // TODO check if token is not expired
 
+  console.log("get new authToken");
+
   return fetch("http://localhost:4000/refresh_token", {
     credentials: "include",
   })

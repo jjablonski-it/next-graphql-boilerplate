@@ -47,7 +47,7 @@ export default class UserResolver {
 
     let user = await User.insert({ name, password: hashedPassword }).catch(
       () => {
-        error = { field: "username", message: "username taken" };
+        error = { field: "name", message: "username taken" };
       }
     );
 
@@ -62,7 +62,7 @@ export default class UserResolver {
     @Ctx() { res }: ContextType
   ): Promise<LoginResponse> {
     const user = await User.findOne({ name });
-    if (!user) return { error: { field: "field", message: "wrong username" } };
+    if (!user) return { error: { field: "name", message: "wrong username" } };
 
     const valid = await compare(password, user.password);
     if (!valid)
