@@ -1,0 +1,13 @@
+{
+  "type": "postgres",
+  "database": "test",
+  "username": "postgres",
+  "password": "123",
+  "synchronize": false,
+  "entities": ["./build/entities/**/*.js"],
+  "migrations": ["./build/migration/*.js"],
+  "cli": {
+    "migrationsDir": "./src/migration"
+  },
+  "log": true
+}

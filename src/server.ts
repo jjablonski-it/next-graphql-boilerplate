@@ -6,16 +6,25 @@ import { buildSchema } from "type-graphql";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
-import { dbConfig, PORT } from "./config";
+import { PORT } from "./config";
 import HelloResolver from "./resolvers/HelloResolver";
 import UserResolver from "./resolvers/UserResolver";
 import { createConnection } from "typeorm";
 import refreshTokenRoute from "./auth/refreshTokenRoute";
 
 (async () => {
-  await createConnection(dbConfig);
+  // Typeorm
+  try {
+    const connection = await createConnection();
+    await connection.runMigrations();
+  } catch (e) {
+    throw e;
+  }
+
+  // Express
   const app = express();
 
+  // Graphql
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, UserResolver],
@@ -35,6 +44,7 @@ import refreshTokenRoute from "./auth/refreshTokenRoute";
     return res.send("OK");
   });
 
+  // Server
   app.listen(PORT, () =>
     console.log(
       `graphql server running on http://localhost:${PORT}${apolloServer.graphqlPath}`

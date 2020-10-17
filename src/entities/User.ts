@@ -33,4 +33,7 @@ export default class User extends BaseEntity {
 
   @Column()
   password: string;
+
+  @Column({ default: false })
+  test: boolean;
 }
