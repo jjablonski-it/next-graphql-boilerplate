@@ -3,7 +3,7 @@ import ErrorObject from "./ErrorObject";
 
 @ObjectType()
 class LoginResponse {
-  @Field()
+  @Field({ nullable: true })
   authToken?: String;
   @Field({ nullable: true })
   error?: ErrorObject;
